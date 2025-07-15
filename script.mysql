@@ -1,0 +1,239 @@
+DROP DATABASE biblio;
+CREATE DATABASE IF NOT EXISTS biblio;
+USE biblio;
+
+-- gestion de staff
+CREATE TABLE type_staff (
+    id_type_staff INT AUTO_INCREMENT PRIMARY KEY,
+    type_staff VARCHAR(100)
+);
+
+INSERT INTO type_staff VALUES
+(1, 'bibliothecaire'),
+(2, 'finance');
+
+CREATE TABLE staff (
+    id_staff INT AUTO_INCREMENT PRIMARY KEY,
+    id_type_staff INT, 
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL, -- stocke le hash, jamais le mot de passe en clair
+    FOREIGN KEY (id_type_staff) REFERENCES type_staff(id_type_staff)
+);
+
+INSERT INTO staff VALUES
+(1, 1, 'bibliothequeR', 'bibliothequeR');
+
+-- TABLE : type d'adhérent
+CREATE TABLE type_adherent (
+    id_type_adherent INT AUTO_INCREMENT PRIMARY KEY,
+    type_adherent VARCHAR(50) UNIQUE,
+    duree_emprunt_auth INT, -- en jours
+    quotat_auth INT,
+    duree_penalite INT -- en jours
+);
+
+INSERT INTO type_adherent (type_adherent, duree_emprunt_auth, quotat_auth, duree_penalite) VALUES 
+('enseignant', 9, 3, 9),
+('etudiant', 7, 2, 10),
+('professionnel', 12, 4, 8);
+ -- emprunt interdit
+
+-- TABLE : statut de l'adhérent (actif ou non)
+CREATE TABLE statut (
+    id_statut INT AUTO_INCREMENT PRIMARY KEY,
+    statut VARCHAR(20) UNIQUE
+);
+
+INSERT INTO statut (statut) VALUES 
+('actif'),
+('inactif');
+
+-- TABLE : adherent
+CREATE TABLE adherent (
+    id_adherent INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100),
+    prenom VARCHAR(100),
+    dtn DATE,
+    identifiant VARCHAR(50) UNIQUE,
+    id_type_adherent INT,
+    id_statut INT,
+    abonnement_paye BOOLEAN DEFAULT FALSE,
+    sanction_jusqua DATE DEFAULT NULL,
+    FOREIGN KEY (id_type_adherent) REFERENCES type_adherent(id_type_adherent),
+    FOREIGN KEY (id_statut) REFERENCES statut(id_statut)
+);
+
+-- ajouter une dizaine d adherents certains actif, d autres non (actif si abonnement paye, inactif si abonnement non paye) , et certains sanctionne (tu penses qu on devrait ajouter 'sanctionne' dans table statut ou non?)
+-- 10 adhérents avec différentes situations (commenté) 1, ACTIF , 2, INACTIF 
+INSERT INTO adherent (nom, prenom, dtn, identifiant, id_type_adherent, id_statut, abonnement_paye, sanction_jusqua) VALUES
+('Amine','Bensaid','','ETU001',2,1,TRUE, NULL),
+('Sarah','El Khattabi','','ETU002',2,2,FALSE, NULL),
+('Youssef','Moujahid','','ETU003',2,1,TRUE, NULL),
+('Nadia','Benali','','ENS001',1,1,TRUE, NULL),
+('Karim','Haddadi','','ENS002',1,2,FALSE, NULL),
+('Salima','Touhami','','ENS003',1,1,TRUE, NULL),
+('Rachid','El Mansouri','','PROF001',3,1,TRUE, NULL),
+('Amina','Zerouali','','PROF002',3,2,FALSE, NULL);
+
+-- TABLE : livre
+CREATE TABLE livre (
+    id_livre INT AUTO_INCREMENT PRIMARY KEY,
+    titre VARCHAR(255),
+    auteur VARCHAR(255),
+    isbn VARCHAR(20), -- corrigé ici
+    langue VARCHAR(50),
+    mots_cles TEXT,
+    description TEXT,
+    note FLOAT,
+    commentaires TEXT
+);
+
+
+-- TABLE : exemplaire
+CREATE TABLE exemplaire (
+    id_exemplaire INT AUTO_INCREMENT PRIMARY KEY,
+    id_livre INT,
+    disponible BOOLEAN DEFAULT TRUE,
+    perdu BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (id_livre) REFERENCES livre(id_livre)
+);
+
+ALTER TABLE exemplaire
+ADD COLUMN num_exemplaire VARCHAR(10) UNIQUE AFTER id_exemplaire;
+
+-- ajouter 15 livres 3 exemplaires chacun
+-- 15 livres simples
+INSERT INTO livre (titre, auteur, isbn, langue, mots_cles, description, note, commentaires) VALUES
+('Les Miserables', 'Victor Hugo', '9782070409189', 'francais', 'classique,roman,enfance', 'Litterature classique', 4.8, 'Un chef d oeuvre'),
+('L etranger', 'Albert Camus', '9782070360022', 'francais', 'classique,politique,philosophie', 'Philosophie', 3.8, '...'),
+('Harry Potter a l ecole des sorciers', 'J.K. Rowling', '9782070643026', 'francais', 'aventure,roman,magie', 'Jeunesse / Fantastique', 4.5, '...');
+
+
+-- Génération des exemplaires
+-- Livre 1 : Les Misérables
+INSERT INTO exemplaire (id_livre, num_exemplaire, disponible, perdu) VALUES
+(1, 'MIS001', 1, 0),
+(1, 'MIS002', 1, 0),
+(1, 'MIS003', 1, 0);
+
+-- Livre 2 : L'Étranger
+INSERT INTO exemplaire (id_livre, num_exemplaire, disponible, perdu) VALUES
+(2, 'ETR001', 1, 0),
+(2, 'ETR002', 1, 0);
+
+-- Livre 3 : Harry Potter à l'école des sorciers
+INSERT INTO exemplaire (id_livre, num_exemplaire, disponible, perdu) VALUES
+(3, 'HAR001', 1, 0);
+
+
+-- TABLE : emprunt
+CREATE TABLE emprunt (
+    id_emprunt INT AUTO_INCREMENT PRIMARY KEY,
+    id_adherent INT,
+    id_exemplaire INT,
+    date_emprunt DATE,
+    date_retour_prevue DATE,
+    date_retour_effective DATE DEFAULT NULL,
+    FOREIGN KEY (id_adherent) REFERENCES adherent(id_adherent),
+    FOREIGN KEY (id_exemplaire) REFERENCES exemplaire(id_exemplaire)
+);
+
+-- ajouter des donnees d emprunt sur differentes dates avec les bonnes donnees
+-- Exemple d’emprunts valides
+-- INSERT INTO emprunt (id_adherent, id_exemplaire, date_emprunt, date_retour_prevue) VALUES
+-- (1, 1, '2025-06-15', '2025-07-15'),  -- professeur actif
+-- (2, 2, '2025-06-20', '2025-07-05'),  -- étudiant actif
+-- (3, 3, '2025-06-22', '2025-08-01'),  -- staff actif
+-- (6, 4, '2025-06-25', '2025-07-10'),  -- étudiant actif
+-- (5, 5, '2025-06-28', '2025-07-28'),  -- professeur sanctionné
+-- (7, 6, '2025-07-01', '2025-08-01');  -- staff sanctionné
+
+
+-- actions dans historiques d emprunts
+CREATE TABLE actions_histo_emprunt (
+    id_action INT AUTO_INCREMENT PRIMARY KEY,
+    action VARCHAR(50)
+);
+
+INSERT INTO actions_histo_emprunt VALUES
+(1, 'emprunt'),
+(2, 'retour'),
+(3, 'prolongation'),
+(4, 'reservation');
+
+-- TABLE : historique_emprunt
+CREATE TABLE historique_emprunt (
+    id_historique INT AUTO_INCREMENT PRIMARY KEY,
+    id_emprunt INT,
+    id_action INT, -- emprunt, retour, prolongation...
+    date_action DATE,
+    FOREIGN KEY (id_emprunt) REFERENCES emprunt(id_emprunt),
+    FOREIGN KEY (id_action) REFERENCES actions_histo_emprunt(id_action)
+);
+
+-- ajouter des donnees d historique d emrpunt correspondant aux emprunts dans la table precedente et des adherents reels enregistres et actifs 
+-- Historique correspondant aux emprunts
+-- INSERT INTO historique_emprunt (id_emprunt, id_action, date_action) VALUES
+-- (1, 1, '2025-06-15'),  -- emprunt par professeur
+-- (2, 1, '2025-06-20'),  -- emprunt par étudiant
+-- (3, 1, '2025-06-22'),  -- emprunt par staff
+-- (4, 1, '2025-06-25'),  -- emprunt par étudiant
+-- (5, 1, '2025-06-28'),  -- emprunt par professeur sanctionné
+-- (6, 1, '2025-07-01');  -- emprunt par staff sanctionné
+
+
+-- ✅ Retour dans les temps pour l'étudiant (prévu 2025-07-05, retour effectué 2025-07-05)
+-- UPDATE emprunt SET date_retour_effective = '2025-07-05' WHERE id_emprunt = 2;
+-- INSERT INTO historique_emprunt (id_emprunt, id_action, date_action) VALUES (2, 2, '2025-07-05');
+
+-- ❌ Retour en retard pour l'étudiant (prévu 2025-07-10, retour effectué 2025-07-20)
+-- UPDATE emprunt SET date_retour_effective = '2025-07-20' WHERE id_emprunt = 4;
+-- INSERT INTO historique_emprunt (id_emprunt, id_action, date_action) VALUES (4, 2, '2025-07-20');
+
+-- Marquer indisponible tous les exemplaires empruntés non retournés (date_retour_effective IS NULL)
+UPDATE exemplaire e
+JOIN emprunt em ON e.id_exemplaire = em.id_exemplaire
+SET e.disponible = 0
+WHERE em.date_retour_effective IS NULL;
+
+
+-- Marquer disponible tous les autres exemplaires (non empruntés ou retournés)
+UPDATE exemplaire e
+LEFT JOIN emprunt em ON e.id_exemplaire = em.id_exemplaire AND em.date_retour_effective IS NULL
+SET e.disponible = 1
+WHERE em.id_emprunt IS NULL;
+
+
+SELECT l.id_livre, l.titre, e.id_exemplaire, e.disponible, MAX(em.date_emprunt) AS dernier_emprunt  
+                     FROM livre l  
+                     JOIN exemplaire e ON l.id_livre = e.id_livre  
+                     LEFT JOIN emprunt em ON e.id_exemplaire = em.id_exemplaire  
+                     WHERE l.id_livre = 2 
+                     GROUP BY l.id_livre, l.titre, e.id_exemplaire, e.disponible;
+
+CREATE TABLE abonnement (
+    id_abonnement INT AUTO_INCREMENT PRIMARY KEY,
+    id_adherent INT NOT NULL,
+    date_debut DATE NOT NULL,
+    date_fin DATE NOT NULL,
+    FOREIGN KEY (id_adherent) REFERENCES adherent(id_adherent)
+);
+
+SELECT *, (CURDATE() BETWEEN date_debut AND date_fin) AS validite
+FROM abonnement;
+
+-- Exemple (à adapter si les ID changent)
+INSERT INTO abonnement (id_adherent, date_debut, date_fin)
+VALUES
+(1, '2025-02-01', '2025-07-24'),  -- ETU001 → OK
+(2, '2025-02-01', '2025-07-01'),  -- ETU002 → KO
+(3, '2025-04-01', '2025-12-01'),  -- ETU003 → OK
+(4, '2025-07-01', '2026-07-01'),  -- ENS001 → OK
+(5, '2025-08-01', '2026-05-01'),  -- ENS002 → KO
+(6, '2025-07-01', '2026-06-01'),  -- ENS003 → OK
+(7, '2025-06-01', '2025-12-01'),  -- PROF001 → OK
+(8, '2024-10-01', '2025-06-01');  -- PROF002 → KO
+
+ALTER TABLE abonnement ADD COLUMN validite BOOLEAN;
+UPDATE abonnement
+SET validite = (CURDATE() BETWEEN date_debut AND date_fin);

@@ -1,0 +1,121 @@
+/* Général */
+body {
+    font-family: 'Georgia', serif;
+    background-color: #0b2545; /* bleu nuit sombre */
+    color: #a8d0db; /* bleu clair doux */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+/* Conteneur centré */
+.container {
+    width: 90%;
+    max-width: 900px;
+    padding: 30px;
+    background-color: #143d59; /* bleu profond */
+    margin: 40px auto;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(72, 145, 158, 0.8); /* halo bleu clair */
+}
+
+/* Titres */
+h1, h2, h3 {
+    color: #7fbbd3; /* bleu eau */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Liens */
+a {
+    color: #82c0cc; /* turquoise clair */
+    text-decoration: none;
+    font-weight: bold;
+}
+a:hover {
+    text-decoration: underline;
+    color: #a3d2ca; /* vert d’eau clair */
+}
+
+/* Tableaux */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    border: 1px solid #2a4d69;
+    padding: 12px;
+    text-align: center;
+}
+th {
+    background-color: #16425b; /* bleu plus sombre */
+    color: #a8d0db;
+}
+tr:nth-child(even) {
+    background-color: #1f5673; /* bleu moyen */
+}
+tr:nth-child(odd) {
+    background-color: #143d59; /* bleu profond */
+}
+
+/* Formulaires */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+label {
+    margin-top: 15px;
+    font-weight: bold;
+    color: #a8d0db;
+}
+input[type="text"],
+input[type="number"],
+select {
+    width: 80%;
+    max-width: 400px;
+    padding: 10px;
+    margin-top: 5px;
+    background-color: #1f5673;
+    border: 1px solid #2a4d69;
+    border-radius: 6px;
+    color: #cde7e7;
+}
+input[type="submit"] {
+    margin-top: 20px;
+    padding: 10px 30px;
+    background-color: #3aafa9; /* vert d’eau vif */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+input[type="submit"]:hover {
+    background-color: #2b8a84;
+}
+
+/* Messages */
+p {
+    text-align: center;
+    margin-top: 15px;
+    color: #a8d0db;
+}
+p.error {
+    color: #ef476f; /* rouge lumineux */
+}
+p.success {
+    color: #06d6a0; /* vert clair */
+}
+
+/* Liste */
+ul {
+    list-style-type: circle;
+    padding-left: 20px;
+    color: #a8d0db;
+}

@@ -152,7 +152,7 @@
 <p><a href="<%= request.getContextPath() %>/retour">Retourner un livre</a></p>
 <p><a href="<%= request.getContextPath() %>/logout">Se déconnecter</a></p>
 <p><a href="<%= request.getContextPath() %>/livres">Voir tous les livres et exemplaires</a></p>
-<p><a href="<%= request.getContextPath() %>/adherents">Voir la liste des adhérents</a></p>
+<p><a href="<%= request.getContextPath() %>/liste-adherents">Voir la liste des adhérents</a></p>
 
 </div>
 </body>

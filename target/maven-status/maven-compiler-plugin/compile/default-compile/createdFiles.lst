@@ -8,6 +8,7 @@ com\maBibliotheque\servlet\DashboardServlet.class
 com\maBibliotheque\service\LivreService.class
 com\maBibliotheque\service\AdherentService.class
 com\maBibliotheque\Main.class
+com\maBibliotheque\servlet\ListeAdherentsPageServlet.class
 com\maBibliotheque\servlet\RetourServlet.class
 com\maBibliotheque\servlet\LivreServlet.class
 com\maBibliotheque\service\DashboardService.class

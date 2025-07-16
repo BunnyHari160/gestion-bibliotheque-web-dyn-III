@@ -54,6 +54,15 @@
     <url-pattern>/adherents</url-pattern>
 </servlet-mapping>
 
+<servlet>
+    <servlet-name>ListeAdherentsPageServlet</servlet-name>
+    <servlet-class>com.maBibliotheque.servlet.ListeAdherentsPageServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>ListeAdherentsPageServlet</servlet-name>
+    <url-pattern>/liste-adherents</url-pattern>
+</servlet-mapping>
+
 
     <!-- Session timeout 30min -->
     <session-config>

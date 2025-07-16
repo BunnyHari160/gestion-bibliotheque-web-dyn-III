@@ -24,3 +24,5 @@ VALUES
 ALTER TABLE abonnement ADD COLUMN validite BOOLEAN;
 UPDATE abonnement
 SET validite = (CURDATE() BETWEEN date_debut AND date_fin);
+
+-- structure
